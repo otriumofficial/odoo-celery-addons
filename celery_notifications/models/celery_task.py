@@ -11,7 +11,6 @@ class CeleryTask(models.Model):
 
     sent_with_mail_digest = fields.Boolean(string="Sent with mail digest", default=False)
 
-    @api.multi
     def get_task_url(self):
         """
         Methods:
@@ -29,7 +28,6 @@ class CeleryTask(models.Model):
         url = url.replace('res_id', 'id')
         return url
 
-    @api.multi
     def write(self, vals):
         res = super(CeleryTask, self).write(vals)
         if 'state' in vals:
@@ -39,17 +37,17 @@ class CeleryTask(models.Model):
                     notify_settings = self.env['celery.task.setting'].search([('model', '=', task.model), ('method', '=', task.method)])
                     notification = {
                         'title': 'Celery Task',
-                        'text': '{model}:{method}, record: {ref}'.format(model=task.model, method=task.method, ref=task.ref),
-                        'type': 'error',
+                        'message': '{model}:{method}, record: {ref}'.format(model=task.model, method=task.method, ref=task.ref),
+                        'type': 'warning',
                         'animate': True,
-                        'icon': 'fa fa-3x fa-cog',
+                        'icon': 'fa-cog',
                         'image_url': '/celery_notifications/static/src/img/celery.png',
                         'timeout': 5000,
                         'buttons': [{
                                 'tag': 'open',
                                 'action': 'celery.action_celery_task',
-                                'label': 'View Tasks',
-                                'icon': 'fa fa-cog'}],
+                                'text': 'View Tasks',
+                                'icon': 'fa-cog'}],
                     }
                     if task.state == STATE_JAMMED and notify_settings and notify_settings.jammed_notify_users_ids:
                         try:
@@ -59,7 +57,7 @@ class CeleryTask(models.Model):
                             if notify_settings.jammed_send_email_notification and notify_settings.jammed_send_email_template:
                                 template = notify_settings.jammed_send_email_template
                                 for user in notify_settings.jammed_notify_users_ids:
-                                    body_html = template.render_template(template.body_html, 'celery.task', task and task.id)
+                                    body_html = template._render_template(template.body_html, 'celery.task', task and task.id)
                                     message = mail_server.build_email(
                                         email_from=self.sudo().env.user.email,
                                         subject=_(u'Jammed Celery Task'),
@@ -78,7 +76,7 @@ class CeleryTask(models.Model):
                             if notify_settings.failed_send_email_notification and notify_settings.failed_send_email_template:
                                 template = notify_settings.failed_send_email_template
                                 for user in notify_settings.failed_notify_users_ids:
-                                    body_html = template.render_template(template.body_html, 'celery.task', task and task.id)
+                                    body_html = template._render_template(template.body_html, 'celery.task', task and task.id)
                                     mail_server = self.env['ir.mail_server']
                                     message = mail_server.build_email(
                                         email_from=self.sudo().env.user.email,
@@ -98,7 +96,7 @@ class CeleryTask(models.Model):
                             if notify_settings.success_send_email_notification and notify_settings.success_send_email_template:
                                 template = notify_settings.success_send_email_template
                                 for user in notify_settings.success_notify_users_ids:
-                                    body_html = template.render_template(template.body_html, 'celery.task', task and task.id)
+                                    body_html = template._render_template(template.body_html, 'celery.task', task and task.id)
                                     mail_server = self.env['ir.mail_server']
                                     message = mail_server.build_email(
                                         email_from=self.sudo().env.user.email,
@@ -124,7 +122,7 @@ class CeleryTask(models.Model):
                 if jammed_tasks or failed_tasks:
                     template = self.env.ref('celery_notifications.celery_task_digest_template', raise_if_not_found=False)
                     if template:
-                        body_html = template.with_context(jammed_tasks=jammed_tasks, failed_tasks=failed_tasks).render_template(template.body_html, 'celery.task.setting', setting.id)
+                        body_html = template.with_context(jammed_tasks=jammed_tasks, failed_tasks=failed_tasks)._render_template(template.body_html, 'celery.task.setting', setting.id)
                         mail_server = self.env['ir.mail_server']
                         message = mail_server.with_context(jammed_tasks=jammed_tasks, failed_tasks=failed_tasks).build_email(
                             email_from=self.sudo().env.user.email,

@@ -84,13 +84,11 @@ class CeleryTaskSetting(models.Model):
         ('minutes', 'Minutes'),
     ], string='E-mail Digest interval type', default='hours', required=True, track_visibility='onchange')
 
-    @api.one
     def _are_you_inside(self):
         self.jammed_are_you_inside = bool(self.env.uid in [u.id for u in self.jammed_notify_users_ids])
         self.failed_are_you_inside = bool(self.env.uid in [u.id for u in self.failed_notify_users_ids])
         self.success_are_you_inside = bool(self.env.uid in [u.id for u in self.success_notify_users_ids])
 
-    @api.multi
     def action_join(self):
         self.ensure_one()
         state_change = self.env.context.get('state_change', False)
@@ -101,7 +99,6 @@ class CeleryTaskSetting(models.Model):
         elif state_change and state_change == 'success':
             return self.write({'success_notify_users_ids': [(4, self._uid)]})
 
-    @api.multi
     def action_quit(self):
         self.ensure_one()
         state_change = self.env.context.get('state_change', False)
@@ -112,13 +109,11 @@ class CeleryTaskSetting(models.Model):
         elif state_change and state_change == 'success':
             return self.write({'success_notify_users_ids': [(3, self._uid)]})
 
-    @api.multi
     def write(self, vals):
         res = super(CeleryTaskSetting, self).write(vals)
         # set cron interval value for the digest email
         self.set_email_digest_cron_interval()
 
-    @api.multi
     def unlink(self):
         for setting in self:
             try:
@@ -176,7 +171,6 @@ class CeleryTaskSetting(models.Model):
                 if cron:
                     cron.unlink()
 
-    @api.multi
     def toggle_digest(self):
         for record in self:
             if record.send_task_digest_email:

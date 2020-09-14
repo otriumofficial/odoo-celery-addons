@@ -3,7 +3,7 @@
     'name': 'Celery Task Notifications',
     'summary': 'Web/E-mail notifications for celery tasks',
     'category': 'General',
-    'version': '11.0.1.0.0',
+    'version': '12.0.1.0.0',
     'author': 'Otrium B.V.',
     'website': 'https://www.otrium.com',
     'license': "LGPL-3",
