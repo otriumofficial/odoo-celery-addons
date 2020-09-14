@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="celery_task_template" model="mail.template">
+        <field name="name">Notification - Celery</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="model_id" ref="celery.model_celery_task"/>
+        <field name="body_html"><![CDATA[
+            <table border="1" style="border-color:rgba(150, 150, 220, 0.3);border-collapse: collapse;" width="100%">
+                <tbody>
+                    <tr style="background-color:#b163a3;font-color:#ffffff">
+                        <td colspan="2" width="80%" style="padding:2%;text-align: center;border-bottom:0px;">
+                            <strong><big>
+                                <font color="#ffffff"><a style="color:#ffffff;">Celery Task Notification</a></font>
+                            </big></strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="border-top:0px;border-bottom:0px;">
+
+                            <table border="1" style="border-color:rgba(150, 150, 220, 0.3);border-collapse: collapse;" width="100%">
+                                <tbody>
+                                    <tr>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <strong>Task UUID</strong>
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <strong>Task Model:Method</strong>
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <strong>Record Reference</strong>
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <strong>Date Started</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <a href="${ object.get_task_url() }">
+                                                <i>${object.uuid}</i>
+                                            </a>&nbsp;&nbsp;&nbsp;
+                                            <a href="${ object.get_task_url() }" style="background-color: #5cb85c;padding: 2px 6px 2px 6px;border-top: 1px solid #4cae4c;border-right: 1px solid #4cae4c;border-bottom: 1px solid #4cae4c;border-left: 1px solid #4cae4c;text-decoration:none;border-radius: 5px;">
+                                                <span style="color:#FFFFFF;">&gt;</span>
+                                            </a>
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            ${object.model}:${object.method}
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            ${object.ref}
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            ${object.started_date}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        ]]></field>
+    </record>
+
+    <record id="celery_task_digest_template" model="mail.template">
+        <field name="name">Celery Tasks Digest</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="model_id" ref="celery.model_celery_task_setting"/>
+        <field name="body_html"><![CDATA[
+            <table border="1" style="border-color:rgba(150, 150, 220, 0.3);border-collapse: collapse;" width="100%">
+                <tbody>
+                    <tr style="background-color:#b163a3;font-color:#ffffff">
+                        <td colspan="2" width="80%" style="padding:2%;text-align: center;border-bottom:0px;">
+                            <strong><big>
+                                <font color="#ffffff"><a style="color:#ffffff;">Celery Tasks Digest:</a></font>
+                            </big></strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="border-top:0px;border-bottom:0px;">
+                            <strong><big>
+                                Failed Tasks:
+                            </big></strong>
+                            <table border="1" style="border-color:rgba(150, 150, 220, 0.3);border-collapse: collapse;" width="100%">
+                                <tbody>
+                                    <tr>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <strong>Task UUID</strong>
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <strong>Task Model:Method</strong>
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <strong>Record Reference</strong>
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <strong>Date Started</strong>
+                                        </td>
+                                    </tr>
+                                    % for o in ctx['failed_tasks']:
+                                    <tr>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <a href="${ o.get_task_url() }">
+                                                <i>${o.uuid}</i>
+                                            </a>&nbsp;&nbsp;&nbsp;
+                                            <a href="${ o.get_task_url() }" style="background-color: #5cb85c;padding: 2px 6px 2px 6px;border-top: 1px solid #4cae4c;border-right: 1px solid #4cae4c;border-bottom: 1px solid #4cae4c;border-left: 1px solid #4cae4c;text-decoration:none;border-radius: 5px;">
+                                                <span style="color:#FFFFFF;">&gt;</span>
+                                            </a>
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            ${o.model}:${o.method}
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            ${o.ref}
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            ${o.started_date}
+                                        </td>
+                                    </tr>
+                                    % endfor
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="border-top:0px;border-bottom:0px;">
+                            <strong><big>
+                                Jammed Tasks:
+                            </big></strong>
+                            <table border="1" style="border-color:rgba(150, 150, 220, 0.3);border-collapse: collapse;" width="100%">
+                                <tbody>
+                                    <tr>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <strong>Task UUID</strong>
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <strong>Task Model:Method</strong>
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <strong>Record Reference</strong>
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <strong>Date Started</strong>
+                                        </td>
+                                    </tr>
+                                    % for o in ctx['jammed_tasks']:
+                                    <tr>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            <a href="${ o.get_task_url() }">
+                                                <i>${o.uuid}</i>
+                                            </a>&nbsp;&nbsp;&nbsp;
+                                            <a href="${ o.get_task_url() }" style="background-color: #5cb85c;padding: 2px 6px 2px 6px;border-top: 1px solid #4cae4c;border-right: 1px solid #4cae4c;border-bottom: 1px solid #4cae4c;border-left: 1px solid #4cae4c;text-decoration:none;border-radius: 5px;">
+                                                <span style="color:#FFFFFF;">&gt;</span>
+                                            </a>
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            ${o.model}:${o.method}
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            ${o.ref}
+                                        </td>
+                                        <td style="padding:2%;border-color:rgba(150, 150, 220, 0.3);">
+                                            ${o.started_date}
+                                        </td>
+                                    </tr>
+                                    % endfor
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        ]]></field>
+    </record>
+
+</odoo>

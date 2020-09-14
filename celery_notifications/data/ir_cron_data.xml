@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!-- Copyright Otrium (http://www.otrium.nl) -->
+
+<odoo>
+    <data noupdate="1">
+        <record id="ir_cron_celery_notifications_digest" forcecreate="True" model="ir.cron">
+            <field name="name">Celery: Send Task Digest E-mail</field>
+            <field name="model_id" ref="model_celery_task"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_notifications_digest()</field>
+            <field name="active" eval="False"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="priority">10</field>
+            <field eval="False" name="doall" />
+        </record>
+    </data>
+</odoo>

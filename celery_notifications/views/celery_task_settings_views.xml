@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="view_celery_task_settings_notify" model="ir.ui.view">
+            <field name="name">Notification fields for celery task settings</field>
+            <field name="model">celery.task.setting</field>
+            <field name="inherit_id" ref="celery.view_celery_task_setting_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook[@name='task_settings_notebook']" position="inside">
+                    <page string="Notifications" name="tab_notifications">
+                        <group colspan="4">
+                            <notebook name="notifications" colspan="4">
+                                <page string="For Jammed Tasks">
+                                    <group string="Users to notify" name="jammed_users_to_notify" colspan="4">
+                                        <div class="oe_button_box" name="button_box2">
+                                            <button type="object" name="action_join" context="{'state_change': 'jammed'}" 
+                                                    class="oe_highlight" string="I want to be notified" 
+                                                    attrs='{"invisible": ["|",["jammed_are_you_inside", "=", True], ["id", "=", False]]}'/>
+                                            <button type="object" name="action_quit" context="{'state_change': 'jammed'}" 
+                                                    string="I do not want to be notified" 
+                                                    attrs='{"invisible": [["jammed_are_you_inside", "=", False]]}'/>
+                                            <field name="jammed_are_you_inside" invisible="1"/>
+                                        </div>
+                                        <field name="jammed_notify_users_ids" nolabel="1" colspan="2">
+                                            <kanban>
+                                                <field name="id"/>
+                                                <field name="name"/>
+                                                <templates>
+                                                    <t t-name="kanban-box">
+                                                        <div>
+                                                            <a t-if="!read_only_mode" type="delete" class="fa fa-times pull-right"/>
+                                                            <div class="o_kanban_image">
+                                                                <img t-att-src="kanban_image('res.users', 'image', record.id.raw_value)"/>
+                                                            </div>
+                                                            <div class="o_kanban_details">
+                                                                <h4 class="o_kanban_record_title"><field name="name"/></h4>
+                                                            </div>
+                                                        </div>
+                                                    </t>
+                                                </templates>
+                                            </kanban>
+                                        </field>
+                                        <group colspan="4">
+                                            <field name="jammed_notification_duration" string="Notification Duration (seconds)"/>
+                                        </group>
+                                        <group name="jammed_notify_by_email" colspan="4" col="4">
+                                            <field name="jammed_send_email_notification" string="Send Instant E-mail"/>
+                                            <field name="jammed_send_email_template" string="E-mail Template"
+                                                    domain= "[('model_id.model', '=', 'celery.task')]"
+                                                    attrs='{"invisible": [["jammed_send_email_notification", "=", False]], "required": [["jammed_send_email_notification", "=", True]]}'/>
+                                        </group>
+                                    </group>
+
+                                    
+                                </page>
+                                <page string="For Failed Tasks">
+                                    <group string="Users to notify" name="failed_users_to_notify" colspan="4">
+                                        <div class="oe_button_box" name="button_box3">
+                                            <button type="object" name="action_join" context="{'state_change': 'failed'}" 
+                                                    class="oe_highlight" string="I want to be notified" 
+                                                    attrs='{"invisible": ["|",["failed_are_you_inside", "=", True], ["id", "=", False]]}'/>
+                                            <button type="object" name="action_quit" context="{'state_change': 'failed'}" 
+                                                    string="I do not want to be notified" 
+                                                    attrs='{"invisible": [["failed_are_you_inside", "=", False]]}'/>
+                                            <field name="failed_are_you_inside" invisible="1"/>
+                                        </div>
+                                        <field name="failed_notify_users_ids" nolabel="1" colspan="2">
+                                            <kanban>
+                                                <field name="id"/>
+                                                <field name="name"/>
+                                                <templates>
+                                                    <t t-name="kanban-box">
+                                                        <div>
+                                                            <a t-if="!read_only_mode" type="delete" class="fa fa-times pull-right"/>
+                                                            <div class="o_kanban_image">
+                                                                <img t-att-src="kanban_image('res.users', 'image', record.id.raw_value)"/>
+                                                            </div>
+                                                            <div class="o_kanban_details">
+                                                                <h4 class="o_kanban_record_title"><field name="name"/></h4>
+                                                            </div>
+                                                        </div>
+                                                    </t>
+                                                </templates>
+                                            </kanban>
+                                        </field>
+                                        <group colspan="4">
+                                            <field name="failed_notification_duration" string="Notification Duration (seconds)"/>
+                                        </group>
+                                        <group name="failed_notify_by_email" colspan="4" col="4">
+                                            <field name="failed_send_email_notification" string="Send Instant E-mail"/>
+                                            <field name="failed_send_email_template" string="E-mail Template"
+                                                    domain= "[('model_id.model', '=', 'celery.task')]" 
+                                                    attrs='{"invisible": [["failed_send_email_notification", "=", False]], "required": [["failed_send_email_notification", "=", True]]}'/>
+                                        </group>
+                                    </group>
+                                </page>
+                                <page string="For Successful Tasks">
+                                    <group string="Users to notify" name="success_users_to_notify" colspan="4">
+                                        <div class="oe_button_box" name="button_box4">
+                                            <button type="object" name="action_join" context="{'state_change': 'success'}" 
+                                                    class="oe_highlight" string="I want to be notified" 
+                                                    attrs='{"invisible": ["|",["success_are_you_inside", "=", True], ["id", "=", False]]}'/>
+                                            <button type="object" name="action_quit" context="{'state_change': 'success'}" 
+                                                    string="I do not want to be notified" 
+                                                    attrs='{"invisible": [["success_are_you_inside", "=", False]]}'/>
+                                            <field name="success_are_you_inside" invisible="1"/>
+                                        </div>
+                                        <field name="success_notify_users_ids" nolabel="1" colspan="2">
+                                            <kanban>
+                                                <field name="id"/>
+                                                <field name="name"/>
+                                                <templates>
+                                                    <t t-name="kanban-box">
+                                                        <div>
+                                                            <a t-if="!read_only_mode" type="delete" class="fa fa-times pull-right"/>
+                                                            <div class="o_kanban_image">
+                                                                <img t-att-src="kanban_image('res.users', 'image', record.id.raw_value)"/>
+                                                            </div>
+                                                            <div class="o_kanban_details">
+                                                                <h4 class="o_kanban_record_title"><field name="name"/></h4>
+                                                            </div>
+                                                        </div>
+                                                    </t>
+                                                </templates>
+                                            </kanban>
+                                        </field>
+                                        <group colspan="4">
+                                            <field name="success_notification_duration" string="Notification Duration (seconds)"/>
+                                        </group>
+                                        <group name="success_notify_by_email" colspan="4" col="4">
+                                            <field name="success_send_email_notification" string="Send Instant E-mail"/>
+                                            <field name="success_send_email_template" string="E-mail Template"
+                                                    domain= "[('model_id.model', '=', 'celery.task')]" 
+                                                    attrs='{"invisible": [["success_send_email_notification", "=", False]], "required": [["success_send_email_notification", "=", True]]}'/>
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
+                            <group string="Recurring Mail Digest For Jammed and Failed Tasks:" colspan="4" col="6">
+                                <div class="oe_button_box" name="button_box">
+                                    <button name="toggle_digest" type="object" class="oe_stat_button" icon="fa-mail">
+                                        <field name="send_task_digest_email" widget="boolean_button" options="{'terminology': 'disable'}"/>
+                                    </button>
+                                </div>
+                                <group attrs='{"invisible": [["send_task_digest_email", "=", False]]}'>
+                                    <label for="send_task_digest_email_interval" string="Send To Followers Every: "/>
+                                    <div>
+                                        <field name="send_task_digest_email_interval" class="oe_inline" nolabel="1"/>
+                                        <field name="send_task_digest_email_interval_type" nolabel="1" class="oe_inline"/>
+                                    </div>
+                                    <field name="id" invisible="1"/>
+                                </group>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
